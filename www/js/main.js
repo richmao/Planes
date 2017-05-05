@@ -20,7 +20,7 @@ MainMenu.prototype = {
 		this.overtext = game.add.sprite(400, 100, 'planes', 'textGetReady'); //add GetReady text
         this.overtext.anchor.set(0.5); //set center point of sprite
 
-        game.add.text(250, 165, 'Press space to play', {fontSize: '32px', fill: '#000'});
+        game.add.text(250, 165, 'Tap to play', {fontSize: '32px', fill: '#000'});
 
 
         //Loading instruction assets
@@ -31,7 +31,7 @@ MainMenu.prototype = {
 		game.add.sprite(346, 300, 'planes', 'rockGrass');
 		game.add.sprite(600, 320, 'planes', 'starGold');
 
-		game.add.text(140, 250, 'Space to Jump', {fontSize: '16px', fill: '#000'});
+		game.add.text(140, 250, 'Tap to Jump', {fontSize: '16px', fill: '#000'});
 		game.add.text(386, 250, 'Dodge', {fontSize: '16px', fill: '#000'});
 		game.add.text(590, 250, 'Collect', {fontSize: '16px', fill: '#000'});
 
@@ -42,11 +42,12 @@ MainMenu.prototype = {
     	music.play();
 	},
 	update: function(){
-		//spacebar press to go to next state
-		if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
-			console.log('Goto Game');
-			game.state.start('Game');
-		}
+		//tap to go to next state
+		game.input.onTap.add(this.onTap, this);
+	},
+	onTap: function(){
+		console.log('Goto Game');
+		game.state.start('Game');
 	}
 }
 
@@ -168,12 +169,7 @@ Game.prototype = {
 		}
 
 		//jump controls
-		this.jumpKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-		if(this.jumpKey.justPressed()){
-			jump.play(); //play sound
-			this.player.body.velocity.y -= 400;
-			this.player.angle = -45;
-		}
+		game.input.onTap.add(this.onTap, this);
 
 		//adjust speed based on points, increases as points increase
 		if (speed < 16)
@@ -196,8 +192,12 @@ Game.prototype = {
 		 // }, this);
 
 		 // this.game.debug.body(this.player);
+	},
+	onTap: function(){
+		jump.play(); //play sound
+		this.player.body.velocity.y -= 400;
+		this.player.angle = -45;
 	}
-
 }
 
 var GameOver = function(game){};
@@ -209,19 +209,20 @@ GameOver.prototype = {
 		this.game.add.sprite(0, 0, 'background'); //add background
         this.overtext = game.add.sprite(400, 100, 'planes', 'textGameOver'); //add GameOver text
         this.overtext.anchor.set(0.5); //set center of sprite
-        game.add.text(210, 165, 'Press space to play again', {fontSize: '32px', fill: '#000'});
+        game.add.text(210, 165, 'Tap to play again', {fontSize: '32px', fill: '#000'});
         if (score > best)
         	best = score;
 
     },
     update: function(){
-		//spacebar press to go to next state
-    	if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
-    		music.pause();
-			console.log('Goto MainMenu');
-			game.state.start('MainMenu');
-		}
-    }
+		//tap to go to next state
+		game.input.onTap.add(this.onTap, this);
+	},
+	onTap: function(){
+		music.pause();
+		console.log('Goto MainMenu');
+		game.state.start('MainMenu');
+	}
 }
 
 //add states to game, set starting state
